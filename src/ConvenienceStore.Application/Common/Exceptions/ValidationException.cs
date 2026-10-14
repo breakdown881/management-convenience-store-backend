@@ -1,4 +1,4 @@
-namespace ConvenienceStore.Domain.Common.Exceptions;
+namespace ConvenienceStore.Application.Common.Exceptions;
 
 public class ValidationException : Exception
 {

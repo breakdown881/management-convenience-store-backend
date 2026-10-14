@@ -1,4 +1,4 @@
-namespace ConvenienceStore.Domain.Common.Models;
+namespace ConvenienceStore.Application.Common.Models;
 
 public class PagedResult<T>
 {

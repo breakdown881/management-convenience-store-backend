@@ -1,6 +1,9 @@
-@ConvenienceStore.Api_HostAddress = http://localhost:5094
+@baseUrl = http://localhost:5242
 
-GET {{ConvenienceStore.Api_HostAddress}}/weatherforecast/
+### Test Ping hợp lệ
+GET {{baseUrl}}/api/v1/system/ping?message=HelloConvenienceStore
 Accept: application/json
 
-###
+### Test Ping lỗi Validation (> 50 ký tự)
+GET {{baseUrl}}/api/v1/system/ping?message=LoremIpsumDolorSitAmetConsecteturAdipiscingElitSedDoEiusmodTemporIncididuntUtLaboreEtDoloreMagnaAliqua
+Accept: application/json
