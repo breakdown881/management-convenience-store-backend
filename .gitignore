@@ -1,0 +1,32 @@
+## .NET Core / C#
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+## JetBrains Rider
+.idea/
+*.sln.iml
+
+## Environment & Secrets
+.env
+*.local.json
+
+## Docker volumes (if mounted locally)
+pgdata/
+redisdata/
+
+## OS generated files
+.DS_Store
+Thumbs.db
