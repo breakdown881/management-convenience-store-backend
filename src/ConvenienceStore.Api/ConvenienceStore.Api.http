@@ -1,9 +1,28 @@
 @baseUrl = http://localhost:5242
 
-### Test Ping hợp lệ
-GET {{baseUrl}}/api/v1/system/ping?message=HelloConvenienceStore
-Accept: application/json
+### 1. Đăng nhập thành công với tài khoản Admin mặc định
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
 
-### Test Ping lỗi Validation (> 50 ký tự)
-GET {{baseUrl}}/api/v1/system/ping?message=LoremIpsumDolorSitAmetConsecteturAdipiscingElitSedDoEiusmodTemporIncididuntUtLaboreEtDoloreMagnaAliqua
-Accept: application/json
+{
+  "username": "admin",
+  "password": "Admin@123456"
+}
+
+### 2. Đăng nhập thất bại (Sai mật khẩu)
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "WrongPassword!"
+}
+
+### 3. Đăng nhập thất bại (Để trống - Test ValidationBehavior)
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "username": "",
+  "password": ""
+}
