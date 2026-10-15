@@ -2,6 +2,7 @@ using ConvenienceStore.Application.Common.Interfaces;
 using ConvenienceStore.Infrastructure.Persistence;
 using ConvenienceStore.Infrastructure.Persistence.Interceptors;
 using ConvenienceStore.Infrastructure.Security;
+using ConvenienceStore.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,6 +33,9 @@ public static class DependencyInjection
         services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
         services.AddScoped<DbContext>(provider => provider.GetRequiredService<AppDbContext>());
+
+        // Đăng ký Audit Service
+        services.AddScoped<IAuditService, AuditService>();
 
         return services;
     }

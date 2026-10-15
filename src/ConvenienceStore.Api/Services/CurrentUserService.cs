@@ -22,4 +22,10 @@ public class CurrentUserService : ICurrentUserService
         Guid.TryParse(_httpContextAccessor.HttpContext?.User?.FindFirstValue("store_id"), out var id)
         ? id
         : null;
+
+    public string? IpAddress =>
+        _httpContextAccessor.HttpContext?.Connection?.RemoteIpAddress?.ToString();
+
+    public string? UserAgent =>
+        _httpContextAccessor.HttpContext?.Request?.Headers["User-Agent"].ToString();
 }

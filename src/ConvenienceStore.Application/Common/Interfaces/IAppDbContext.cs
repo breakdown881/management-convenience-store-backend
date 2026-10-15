@@ -1,3 +1,4 @@
+using ConvenienceStore.Domain.Entities.Audit;
 using ConvenienceStore.Domain.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ public interface IAppDbContext
     DbSet<UserRole> UserRoles { get; }
     DbSet<RolePermission> RolePermissions { get; }
     DbSet<UserStoreAssignment> UserStoreAssignments { get; }
+    DbSet<AuditLog> AuditLogs { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

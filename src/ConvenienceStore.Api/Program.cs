@@ -1,10 +1,12 @@
 using System.Text;
+using ConvenienceStore.Api.Authorization;
 using ConvenienceStore.Api.Infrastructure;
 using ConvenienceStore.Api.Services;
 using ConvenienceStore.Application;
 using ConvenienceStore.Application.Common.Interfaces;
 using ConvenienceStore.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -86,6 +88,10 @@ builder.Services.AddScoped<ICurrentUserService, CurrentUserService>();
 
 // Đăng ký tầng Infrastructure (EF Core, Interceptor, DbContext)
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// Đăng ký Dynamic Policy Provider và Permission Authorization Handler
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
+builder.Services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
 var app = builder.Build();
 

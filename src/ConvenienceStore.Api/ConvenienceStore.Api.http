@@ -1,6 +1,7 @@
 @baseUrl = http://localhost:5242
 
-### 1. Đăng nhập thành công với tài khoản Admin mặc định
+### 1. Đăng nhập với Admin để lấy Bearer Token
+# @name adminLogin
 POST {{baseUrl}}/api/v1/auth/login
 Content-Type: application/json
 
@@ -9,20 +10,26 @@ Content-Type: application/json
   "password": "Admin@123456"
 }
 
-### 2. Đăng nhập thất bại (Sai mật khẩu)
-POST {{baseUrl}}/api/v1/auth/login
+### Lưu token từ kết quả đăng nhập phía trên:
+@token = {{adminLogin.response.body.accessToken}}
+
+### 2. Test Get Current User Info ([Authorize])
+GET {{baseUrl}}/api/v1/test-permissions/me
+Authorization: Bearer {{token}}
+
+### 3. Test POS Void Bill ([HasPermission(Permissions.PosVoidBill)] + Ghi Audit Trail)
+POST {{baseUrl}}/api/v1/test-permissions/pos/void-bill
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "username": "admin",
-  "password": "WrongPassword!"
+  "orderId": "ORD-20261015-001",
+  "reason": "Khách đổi ý không mua nữa"
 }
 
-### 3. Đăng nhập thất bại (Để trống - Test ValidationBehavior)
-POST {{baseUrl}}/api/v1/auth/login
-Content-Type: application/json
+### 4. Test Catalog Manage ([HasPermission(Permissions.CatalogManage)])
+POST {{baseUrl}}/api/v1/test-permissions/catalog/manage
+Authorization: Bearer {{token}}
 
-{
-  "username": "",
-  "password": ""
-}
+### 5. Test Truy cập không có Token (Kỳ vọng: 401 Unauthorized)
+GET {{baseUrl}}/api/v1/test-permissions/me
