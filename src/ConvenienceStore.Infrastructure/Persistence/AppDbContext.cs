@@ -3,6 +3,7 @@ using ConvenienceStore.Application.Common.Interfaces;
 using ConvenienceStore.Domain.Constants;
 using ConvenienceStore.Domain.Entities.Audit;
 using ConvenienceStore.Domain.Entities.Identity;
+using ConvenienceStore.Domain.Entities.Stores;
 using ConvenienceStore.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +22,8 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
     public DbSet<UserStoreAssignment> UserStoreAssignments => Set<UserStoreAssignment>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<Store> Stores => Set<Store>();
+    public DbSet<PosTerminal> PosTerminals => Set<PosTerminal>();
 
     public AppDbContext(
         DbContextOptions<AppDbContext> options,

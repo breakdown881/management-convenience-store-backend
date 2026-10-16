@@ -23,4 +23,9 @@ public static class Permissions
     public const string CatalogView = "Permissions.Catalog.View";
     public const string CatalogManage = "Permissions.Catalog.Manage";
     public const string PriceChange = "Permissions.Catalog.PriceChange";
+
+    // Phân hệ Cửa hàng & Thiết bị (Stores & Terminals)
+    public const string StoreView = "Permissions.Store.View";
+    public const string StoreManage = "Permissions.Store.Manage";
+    public const string TerminalManage = "Permissions.Terminal.Manage";
 }

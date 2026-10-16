@@ -33,3 +33,63 @@ Authorization: Bearer {{token}}
 
 ### 5. Test Truy cập không có Token (Kỳ vọng: 401 Unauthorized)
 GET {{baseUrl}}/api/v1/test-permissions/me
+
+### ==============================================
+### PHẦN 3: QUẢN LÝ CỬA HÀNG & MÁY POS (TASK-105, 106)
+### ==============================================
+
+### 1. Tạo mới Cửa hàng 24/7 Quận 1
+# @name createStore
+POST {{baseUrl}}/api/v1/stores
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "code": "STR-HCM-001",
+  "name": "Cửa hàng Tiện Lợi 24/7 Bến Nghé",
+  "address": "123 Lê Lợi, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh",
+  "phoneNumber": "02838123456",
+  "email": "store001@conveniencestore.com",
+  "is247": true,
+  "latitude": 10.7769,
+  "longitude": 106.7009,
+  "region": "TP. Hồ Chí Minh"
+}
+
+### Lưu StoreId vừa tạo
+@storeId = {{createStore.response.body.id}}
+
+### 2. Lấy danh sách cửa hàng (Phân trang)
+GET {{baseUrl}}/api/v1/stores?page=1&pageSize=10
+Authorization: Bearer {{token}}
+
+### 3. Lấy chi tiết cửa hàng theo ID
+GET {{baseUrl}}/api/v1/stores/{{storeId}}
+Authorization: Bearer {{token}}
+
+### 4. Tạo Quầy Thu Ngân POS-01 trong Cửa hàng
+# @name createTerminal
+POST {{baseUrl}}/api/v1/stores/{{storeId}}/terminals
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "terminalCode": "POS-01",
+  "name": "Quầy Thu Ngân 01 - Cổng Chính"
+}
+
+### Lưu TerminalId vừa tạo
+@terminalId = {{createTerminal.response.body.id}}
+
+### 5. Đăng ký Phần cứng Thiết bị POS (Hardware Fingerprint)
+POST {{baseUrl}}/api/v1/terminals/{{terminalId}}/register-device
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "deviceFingerprint": "HW-POS-DELL-OPTIPLEX-SN9876543210-MAC-AA-BB-CC-DD-EE-FF"
+}
+
+### 6. Lấy danh sách quầy POS của cửa hàng
+GET {{baseUrl}}/api/v1/stores/{{storeId}}/terminals
+Authorization: Bearer {{token}}
