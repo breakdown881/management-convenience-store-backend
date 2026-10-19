@@ -2,6 +2,7 @@ using System.Reflection;
 using ConvenienceStore.Application.Common.Interfaces;
 using ConvenienceStore.Domain.Constants;
 using ConvenienceStore.Domain.Entities.Audit;
+using ConvenienceStore.Domain.Entities.Catalog;
 using ConvenienceStore.Domain.Entities.Identity;
 using ConvenienceStore.Domain.Entities.Stores;
 using ConvenienceStore.Infrastructure.Persistence.Interceptors;
@@ -24,6 +25,12 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<Store> Stores => Set<Store>();
     public DbSet<PosTerminal> PosTerminals => Set<PosTerminal>();
+    public DbSet<Category> Categories => Set<Category>();
+    public DbSet<Brand> Brands => Set<Brand>();
+    public DbSet<UnitOfMeasure> UnitOfMeasure => Set<UnitOfMeasure>();
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<ProductBarcode> ProductBarcodes => Set<ProductBarcode>();
+    public DbSet<ProductUnitConversion> ProductUnitConversions => Set<ProductUnitConversion>();
 
     public AppDbContext(
         DbContextOptions<AppDbContext> options,
