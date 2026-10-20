@@ -93,3 +93,162 @@ Content-Type: application/json
 ### 6. Lấy danh sách quầy POS của cửa hàng
 GET {{baseUrl}}/api/v1/stores/{{storeId}}/terminals
 Authorization: Bearer {{token}}
+
+### =========================================================================
+### PHẦN 4: LUỒNG VẬN HÀNH CỐT LÕI (CATALOG -> INVENTORY -> SHIFT -> POS)
+### =========================================================================
+
+### 1. Tạo Ngành hàng Nước giải khát
+# @name createCat
+POST {{baseUrl}}/api/v1/catalog/categories
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "code": "CAT-BEV",
+  "name": "Nước Giải Khát & Bia"
+}
+
+@categoryId = {{createCat.response.body.id}}
+
+### 2. Tạo Đơn vị tính Cơ sở (LON) và Đơn vị quy đổi (LOC6)
+# @name createUnitLon
+POST {{baseUrl}}/api/v1/catalog/units
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "code": "LON",
+  "name": "Lon 330ml"
+}
+
+@unitLonId = {{createUnitLon.response.body.id}}
+
+# @name createUnitLoc
+POST {{baseUrl}}/api/v1/catalog/units
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "code": "LOC6",
+  "name": "Lốc 6 Lon"
+}
+
+@unitLocId = {{createUnitLoc.response.body.id}}
+
+### 3. Tạo Sản phẩm Bia Tiger (Đa mã vạch + Quy đổi 1 Lốc = 6 Lon + VAT 10%)
+# @name createProduct
+POST {{baseUrl}}/api/v1/catalog/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "sku": "SKU-TIGER-330",
+  "name": "Bia Tiger Crystal Lon 330ml",
+  "categoryId": "{{categoryId}}",
+  "baseUnitId": "{{unitLonId}}",
+  "standardPrice": 18000,
+  "initialCostPrice": 14000,
+  "vatRate": 10,
+  "isWeightBased": false,
+  "barcodes": [
+    {
+      "unitOfMeasureId": "{{unitLonId}}",
+      "barcodeValue": "8934822212339",
+      "isPrimary": true
+    },
+    {
+      "unitOfMeasureId": "{{unitLocId}}",
+      "barcodeValue": "8934822212346",
+      "isPrimary": false
+    }
+  ],
+  "unitConversions": [
+    {
+      "unitOfMeasureId": "{{unitLocId}}",
+      "conversionFactor": 6,
+      "salePrice": 105000
+    }
+  ]
+}
+
+@productId = {{createProduct.response.body.id}}
+
+### 4. Xuất dữ liệu In tem giá cài kệ hàng (Shelf Tags - TASK-111)
+GET {{baseUrl}}/api/v1/catalog/shelf-tags?categoryId={{categoryId}}
+Authorization: Bearer {{token}}
+
+### 5. Nhập kho chi nhánh 100 Lon Bia Tiger (TASK-112, 113)
+POST {{baseUrl}}/api/v1/inventory/inbound
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "storeId": "{{storeId}}",
+  "productId": "{{productId}}",
+  "quantityInBaseUnit": 100,
+  "referenceCode": "PO-INIT-001",
+  "note": "Nhập tồn kho đầu kỳ khai trương cửa hàng"
+}
+
+### 6. Tra cứu nhanh Barcode Lốc 6 Lon qua Dapper + Redis Cache (< 50ms - TASK-118)
+GET {{baseUrl}}/api/v1/pos/barcode-lookup/8934822212346
+Authorization: Bearer {{token}}
+
+### 7. Mở Ca làm việc tại Quầy POS-01 với 1,000,000đ tiền lẻ (TASK-116)
+# @name openShift
+POST {{baseUrl}}/api/v1/pos/shifts/open
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "storeId": "{{storeId}}",
+  "posTerminalId": "{{terminalId}}",
+  "openingFloat": 1000000
+}
+
+@shiftId = {{openShift.response.body.shiftId}}
+
+### 8. Bán hàng tại POS: Khách mua 1 Lốc 6 Lon Bia Tiger (Tự động trừ 6 Lon trong kho - TASK-119)
+# @name createOrder
+POST {{baseUrl}}/api/v1/pos/orders
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "storeId": "{{storeId}}",
+  "shiftId": "{{shiftId}}",
+  "isHoldBill": false,
+  "paymentMethod": 1,
+  "amountTendered": 200000,
+  "note": "Khách mua 1 lốc bia",
+  "items": [
+    {
+      "productId": "{{productId}}",
+      "unitOfMeasureId": "{{unitLocId}}",
+      "quantity": 1
+    }
+  ]
+}
+
+@orderId = {{createOrder.response.body.orderId}}
+
+### 9. Xem Thẻ kho (Stock Card) để kiểm chứng tồn kho đã trừ từ 100 -> 94 Lon (TASK-113)
+GET {{baseUrl}}/api/v1/inventory/stores/{{storeId}}/products/{{productId}}/stock-card
+Authorization: Bearer {{token}}
+
+### 10. Đóng ca Blind Drop theo mệnh giá tiền mặt & nhận Báo cáo Z-Report (TASK-117)
+POST {{baseUrl}}/api/v1/pos/shifts/close-blind-drop
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "shiftId": "{{shiftId}}",
+  "denominations": [
+    { "denominationValue": 500000, "sheetCount": 2 },
+    { "denominationValue": 100000, "sheetCount": 1 },
+    { "denominationValue": 10000, "sheetCount": 1 },
+    { "denominationValue": 5000, "sheetCount": 1 },
+    { "denominationValue": 500, "sheetCount": 1 }
+  ]
+}

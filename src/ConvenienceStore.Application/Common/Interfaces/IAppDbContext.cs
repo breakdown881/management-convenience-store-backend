@@ -2,6 +2,7 @@ using ConvenienceStore.Domain.Entities.Audit;
 using ConvenienceStore.Domain.Entities.Catalog;
 using ConvenienceStore.Domain.Entities.Identity;
 using ConvenienceStore.Domain.Entities.Inventory;
+using ConvenienceStore.Domain.Entities.Pos;
 using ConvenienceStore.Domain.Entities.Stores;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,6 +32,12 @@ public interface IAppDbContext
     DbSet<StoreInventory> StoreInventories { get; }
     DbSet<StockCardEntry> StockCardEntries { get; }
     DbSet<StockWriteOff> StockWriteOffs { get; }
+
+    // Phân hệ Vận hành POS & Ca làm việc (POS & Shifts)
+    DbSet<Shift> Shifts { get; }
+    DbSet<ShiftCashTransaction> ShiftCashTransactions { get; }
+    DbSet<PosOrder> PosOrders { get; }
+    DbSet<PosOrderItem> PosOrderItems { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

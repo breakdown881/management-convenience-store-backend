@@ -37,6 +37,16 @@ public static class DependencyInjection
         // Đăng ký Audit Service
         services.AddScoped<IAuditService, AuditService>();
 
+        // Cấu hình Redis Distributed Cache (nếu có cấu hình Redis, ngược lại dùng Memory Distributed Cache dự phòng)
+        var redisConnectionString = configuration.GetConnectionString("Redis") ?? "localhost:6379";
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = redisConnectionString;
+            options.InstanceName = "ConvenienceStore_";
+        });
+
+        services.AddScoped<IBarcodeLookupService, FastBarcodeLookupService>();
+
         return services;
     }
 }

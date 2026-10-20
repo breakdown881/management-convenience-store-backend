@@ -5,6 +5,7 @@ using ConvenienceStore.Domain.Entities.Audit;
 using ConvenienceStore.Domain.Entities.Catalog;
 using ConvenienceStore.Domain.Entities.Identity;
 using ConvenienceStore.Domain.Entities.Inventory;
+using ConvenienceStore.Domain.Entities.Pos;
 using ConvenienceStore.Domain.Entities.Stores;
 using ConvenienceStore.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,10 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<StoreInventory> StoreInventories => Set<StoreInventory>();
     public DbSet<StockCardEntry> StockCardEntries => Set<StockCardEntry>();
     public DbSet<StockWriteOff> StockWriteOffs => Set<StockWriteOff>();
+    public DbSet<Shift> Shifts => Set<Shift>();
+    public DbSet<ShiftCashTransaction> ShiftCashTransactions => Set<ShiftCashTransaction>();
+    public DbSet<PosOrder> PosOrders => Set<PosOrder>();
+    public DbSet<PosOrderItem> PosOrderItems => Set<PosOrderItem>();
 
     public AppDbContext(
         DbContextOptions<AppDbContext> options,
